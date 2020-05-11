@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOptions;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class CasoServiceImpl implements CasoService {
 
 
     @Override
-    public void agregate() {
+    public void agregate(int anno, String flag) {
 
 //
 //        LOG.info("getMongoClientOptions.....:",mongoClient.getMongoClientOptions());
@@ -49,7 +50,7 @@ public class CasoServiceImpl implements CasoService {
 
         System.out.println("--------------INICIO de la prueba aggregate -------------------------------");
         long inicio = System.currentTimeMillis();
-        List<SalesReport> byYear = aggregationByYear3(2014);
+        List<SalesReport> byYear = aggregationByYear3(anno,flag);
         long fin = System.currentTimeMillis();
         long seconds = TimeUnit.MILLISECONDS.toSeconds(fin-inicio);
         System.out.println("Cantidad de registros devueltos.......:" + byYear.size());
@@ -94,11 +95,19 @@ public class CasoServiceImpl implements CasoService {
         return salesReport;
     }
 
-    public List<SalesReport> aggregationByYear3(int year) {
+    public List<SalesReport> aggregationByYear3(int year,String flag) {
 
-        Aggregation aggregation = newAggregation(
-                match(Criteria.where("salesyear").gt(year))
-        );//.withOptions(AggregationOptions.builder().allowDiskUse(true).build());
+        Aggregation aggregation = null;
+
+        if ("si".equals(flag)) {
+            aggregation = newAggregation(
+                    match(Criteria.where("salesyear").gt(year))
+            ).withOptions(AggregationOptions.builder().allowDiskUse(true).build());
+        }else {
+            aggregation = newAggregation(
+                    match(Criteria.where("salesyear").gt(year)));
+        }
+
 
 
         AggregationResults<SalesReport> groupResults = mongoTemplate.aggregate(

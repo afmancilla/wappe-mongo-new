@@ -14,9 +14,9 @@ public class CasoControllador {
     CasoService casoService;
 
 
-    @GetMapping("/aggregate")
-    public void agregate() throws IOException {
-        casoService.agregate();
+    @GetMapping("/aggregate/{anno}/allowDiskUse/{flag}")
+    public void agregate(@PathVariable("anno") int anno,@PathVariable("flag") String flag) throws IOException {
+        casoService.agregate(anno,flag);
     }
 
 
